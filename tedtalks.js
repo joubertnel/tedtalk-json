@@ -44,11 +44,6 @@ parser.ontext = function(text) {
   var isInDownloadColumn = currentColumn === downloadsColumnIndex;
   if (isInTalkCol && !isInDownloadColumn) {
     currentTalkRow[currentTalkSlot.name] = text;
-
-    // Create an ID for the JSON record, which is an MD5 hash of the Talk title
-    if (currentColumn === titleHyperlinkColumnIndex) {
-      currentTalkRow['id'] = crypto.createHash('md5').update(text).digest('hex');
-    }
   }
 }
 
@@ -75,6 +70,8 @@ parser.onopentag = function(node) {
 	if (currentColumn === titleHyperlinkColumnIndex) {
 	  if (node.name === 'A') {
 	    currentTalkRow['talkHome'] = node.attributes['href'];
+	    // Create an ID for the JSON record, which is an MD5 hash of the Talk home URL
+	    currentTalkRow['id'] = crypto.createHash('md5').update(currentTalkRow['talkHome']).digest('hex');
 	  }
 	}
 
