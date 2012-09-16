@@ -1,4 +1,3 @@
-
 // Modules
 var request = require('request');
 var sax = require('sax');
@@ -29,7 +28,9 @@ var titleHyperlinkColumnIndex = 2;
 var downloadsColumnIndex = 4;
 
 function isTalkTableNode(node) {
-  return (node.name === 'TABLE') && (node.attributes.class === 'downloads');
+  var isTable = node.name === 'TABLE';
+  var tableIsTaggedDownloads = isTable && node.attributes.CLASS && node.attributes.CLASS.indexOf('downloads') !== -1;	      
+  return tableIsTaggedDownloads;
 }
 
 function isTalkRowNode(node) {
@@ -69,7 +70,7 @@ parser.onopentag = function(node) {
 
 	if (currentColumn === titleHyperlinkColumnIndex) {
 	  if (node.name === 'A') {
-	    currentTalkRow['talkHome'] = node.attributes['href'];
+	    currentTalkRow['talkHome'] = node.attributes['HREF'];
 	    // Create an ID for the JSON record, which is an MD5 hash of the Talk home URL
 	    currentTalkRow['id'] = crypto.createHash('md5').update(currentTalkRow['talkHome']).digest('hex');
 	  }
@@ -78,7 +79,7 @@ parser.onopentag = function(node) {
 	if (currentColumn === downloadsColumnIndex) {
 	  if (node.name === 'A') {
 	    currentDownloadLinkIndex++;
-	    currentTalkRow[downloadLinkMap[currentDownloadLinkIndex]] = node.attributes['href'];
+	    currentTalkRow[downloadLinkMap[currentDownloadLinkIndex]] = node.attributes['HREF'];
 	  }
 	}
       }
