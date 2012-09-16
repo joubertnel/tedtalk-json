@@ -102,7 +102,7 @@ parser.onclosetag = function(nodeName) {
   
   if (nodeName === 'TABLE') {
     isInTalkTable = false;
-    console.log(talkJSON);
+    console.log(JSON.stringify(talkJSON));
   }
   
 }
