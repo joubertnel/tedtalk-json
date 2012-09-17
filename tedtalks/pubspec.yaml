@@ -1,0 +1,4 @@
+name: tedtalks
+dependencies:
+  html5lib:
+    git: https://github.com/dart-lang/html5lib.git
