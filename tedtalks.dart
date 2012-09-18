@@ -3,9 +3,10 @@
 #import('dart:io');
 #import('dart:uri');
 #import('dart:json');
+#import('dart:crypto');
 
-#import('package:html5lib/lib/html5parser.dart', prefix: 'html5parser');
-#import('package:html5lib/lib/dom.dart');
+#import('package:html5lib/html5parser.dart', prefix: 'html5parser');
+#import('package:html5lib/dom.dart');
 
 final talksListUrl = 'http://www.ted.com/talks/quick-list';
 
@@ -20,15 +21,20 @@ JSON jsonFromHtmlDocument(theDocument) {
     Map<String, String> talk;
 
     if (columns.length > 0) {
-      var pageLink = columns[2].query('a');
-      var talkTitle = pageLink.innerHTML;
-      var talkUrl = pageLink.attributes['href'];
-      var downloadLinks = columns[4].queryAll('a');
-      var downloadLow = downloadLinks.length > 0 ? downloadLinks[0].attributes['href'] : '';
-      var downloadMed = downloadLinks.length > 1 ? downloadLinks[1].attributes['href'] : '';
-      var downloadHigh = downloadLinks.length > 2 ? downloadLinks[2].attributes['href'] : '';
+      final pageLink = columns[2].query('a');
+      final talkTitle = pageLink.innerHTML;
+      final talkUrl = pageLink.attributes['href'];
+      final downloadLinks = columns[4].queryAll('a');
+      final downloadLow = downloadLinks.length > 0 ? downloadLinks[0].attributes['href'] : '';
+      final downloadMed = downloadLinks.length > 1 ? downloadLinks[1].attributes['href'] : '';
+      final downloadHigh = downloadLinks.length > 2 ? downloadLinks[2].attributes['href'] : '';
+
+      SHA1 sha1 = new SHA1();
+      final idDigest = sha1.update(talkUrl.charCodes()).digest();
+      final id = CryptoUtils.bytesToHex(idDigest);
 
       talk = {
+        'id': id,
         'published': columns[0].innerHTML,
         'event': columns[1].innerHTML,
         'title': talkTitle,
@@ -36,7 +42,7 @@ JSON jsonFromHtmlDocument(theDocument) {
         'duration': columns[3].innerHTML,
         'downloadLow': downloadLow,
         'downloadMed': downloadMed,
-        'downloadHgih': downloadHigh
+        'downloadHigh': downloadHigh
       };
     }
 
